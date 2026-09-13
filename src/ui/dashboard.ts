@@ -198,6 +198,73 @@ export function dashboardPage(): string {
       }
       @media (prefers-reduced-motion:reduce) { .hero-slide .slide-copy::before { animation:none; } }
     </style>
+    <style>
+      /* The slideshow is the approved wide hero artwork, shown whole—not cropped or redrawn. */
+      .hero {
+        min-height:0 !important;
+        aspect-ratio:1001 / 357 !important;
+        background:#061426 !important;
+      }
+      .hero-slide,
+      .hero-slide[data-slide="0"],
+      .hero-slide[data-slide="1"],
+      .hero-slide[data-slide="2"] {
+        background-image:url('/images/pinoleros-reference-hero.png') !important;
+        background-size:100% 100% !important;
+        background-position:center !important;
+        background-repeat:no-repeat !important;
+        filter:none !important;
+      }
+      .hero-slide.active { animation:none !important; transform:none !important; }
+      .hero-slides::after { display:none !important; }
+      /* Typography and the visible CTA remain the exact artwork from the supplied original. */
+      .hero-slide .slide-copy::before { display:none !important; }
+      .hero-slide .slide-actions {
+        top:70.5% !important;
+        right:auto !important;
+        bottom:auto !important;
+        left:3.8% !important;
+        width:20.8% !important;
+        height:14.5% !important;
+        display:block !important;
+      }
+      .hero-slide .start {
+        width:100% !important;
+        height:100% !important;
+        min-height:0 !important;
+        padding:0 !important;
+        opacity:0 !important;
+      }
+      .hero-slide .print { display:none !important; }
+      .slide-dots { bottom:3.5% !important; }
+      @media (max-width:720px) {
+        .hero { aspect-ratio:1001 / 357 !important; }
+        .hero-slide .slide-actions { left:3.8% !important; top:70.5% !important; }
+        .slide-dots { display:none !important; }
+      }
+    </style>
+    <style>
+      /* Only the mascot moves between slides; the approved wide artwork stays intact. */
+      .hero-slide[data-slide="1"]::after,
+      .hero-slide[data-slide="2"]::after {
+        content:"" !important;
+        display:block !important;
+        position:absolute !important;
+        z-index:2 !important;
+        pointer-events:none !important;
+        background:url('/images/pinoleros-hero-mascot-overlay.png') center / contain no-repeat !important;
+        filter:drop-shadow(0 12px 16px rgba(0,0,0,.32)) !important;
+        animation:mascot-float 4.8s ease-in-out infinite !important;
+      }
+      .hero-slide[data-slide="1"]::after { width:43% !important; height:96% !important; right:7% !important; bottom:-4% !important; inset:auto 7% -4% auto !important; }
+      .hero-slide[data-slide="2"]::after { width:39% !important; height:88% !important; right:1% !important; bottom:1% !important; inset:auto 1% 1% auto !important; transform:scaleX(-1) rotate(-3deg) !important; animation-delay:-1.6s !important; }
+      @keyframes mascot-float { 0%,100% { margin-bottom:0; } 50% { margin-bottom:8px; } }
+      @media (max-width:720px) {
+        .hero-slide[data-slide="1"]::after { width:42% !important; height:94% !important; right:3% !important; }
+        .hero-slide[data-slide="2"]::after { width:38% !important; height:84% !important; right:0 !important; }
+      }
+      @media (prefers-reduced-motion:reduce) { .hero-slide[data-slide="1"]::after,.hero-slide[data-slide="2"]::after { animation:none !important; } }
+    </style>
   </head>
   <body>
     <div class="app">
