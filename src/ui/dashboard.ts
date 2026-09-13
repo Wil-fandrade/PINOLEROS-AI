@@ -325,6 +325,29 @@ export function dashboardPage(): string {
       }
       @media (prefers-reduced-motion:reduce) { .hero-slide.active,.hero-slides::after { animation:none !important; } }
     </style>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700;800;900&display=swap');
+      /* No dark veil over the supplied campaign frames; retain only the mirror sheen. */
+      .hero-slide::before,
+      .hero-slide[data-slide="1"]::before,
+      .hero-slide[data-slide="2"]::before { display:none !important; background:none !important; }
+      .hero-slide .slide-actions { gap:14px !important; }
+      .hero-slide .start,.hero-slide .print {
+        height:56px !important;
+        padding:0 29px !important;
+        font-family:Roboto,Arial,sans-serif !important;
+        font-size:1.02rem !important;
+        font-weight:900 !important;
+        letter-spacing:.015em !important;
+        text-transform:uppercase;
+      }
+      .hero-slide .start { box-shadow:0 12px 30px rgba(63,22,175,.7),inset 0 1px 0 rgba(255,255,255,.35) !important; }
+      .hero-slide .print { box-shadow:0 12px 30px rgba(255,185,38,.55),inset 0 1px 0 rgba(255,255,255,.55) !important; }
+      @media (max-width:720px) {
+        .hero-slide .slide-actions { gap:12px !important; }
+        .hero-slide .start,.hero-slide .print { height:58px !important; padding:0 22px !important; font-size:1rem !important; }
+      }
+    </style>
   </head>
   <body>
     <div class="app">
