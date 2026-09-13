@@ -1,7 +1,7 @@
 import { getUser } from "../../lib/auth";
 
 interface GenerateInput { prompt?: unknown; style?: unknown; }
-interface SelectInput { title?: unknown; style?: unknown; prompt?: unknown; image?: unknown; }
+interface SelectInput { title?: unknown; style?: unknown; prompt?: unknown; image?: unknown; isPublic?: unknown; }
 interface FluxResult { image: string; }
 
 function stringValue(value: unknown, max: number): string | null {
@@ -52,16 +52,18 @@ export async function selectCreation(request: Request, env: Env): Promise<Respon
   const id = crypto.randomUUID();
   const r2Key = `users/${user.id}/creations/${id}.jpg`;
   await env.CREATIONS.put(r2Key, image, { httpMetadata: { contentType: "image/jpeg" } });
-  await env.DB.prepare("INSERT INTO designs (id, title, style, prompt, owner_id, r2_key, selected_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, CURRENT_TIMESTAMP)")
-    .bind(id, title, style, prompt, user.id, r2Key).run();
-  return Response.json({ id, title, style, imageUrl: `/api/media/${id}` }, { status: 201 });
+  const isPublic = input.isPublic === true || input.isPublic === "on" ? 1 : 0;
+  await env.DB.prepare("INSERT INTO designs (id, title, style, prompt, owner_id, r2_key, selected_at, is_public) VALUES (?1, ?2, ?3, ?4, ?5, ?6, CURRENT_TIMESTAMP, ?7)")
+    .bind(id, title, style, prompt, user.id, r2Key, isPublic).run();
+  await env.DB.prepare("INSERT INTO design_likes (user_id, design_id) VALUES (?1, ?2)").bind(user.id, id).run();
+  return Response.json({ id, title, style, isPublic: Boolean(isPublic), imageUrl: `/api/media/${id}` }, { status: 201 });
 }
 
 export async function myCreations(request: Request, env: Env): Promise<Response> {
   const user = await getUser(request, env);
   if (!user) return Response.json({ error: "Inicia sesión para ver tus creaciones." }, { status: 401 });
-  const { results } = await env.DB.prepare("SELECT id, title, style, created_at FROM designs WHERE owner_id = ?1 ORDER BY created_at DESC")
-    .bind(user.id).all<{ id: string; title: string; style: string; created_at: string }>();
+  const { results } = await env.DB.prepare("SELECT id, title, style, is_public, created_at FROM designs WHERE owner_id = ?1 ORDER BY created_at DESC")
+    .bind(user.id).all<{ id: string; title: string; style: string; is_public: number; created_at: string }>();
   return Response.json({ creations: results.map((creation) => ({ ...creation, imageUrl: `/api/media/${creation.id}` })) });
 }
 

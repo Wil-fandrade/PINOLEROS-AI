@@ -1,0 +1,8 @@
+ALTER TABLE designs ADD COLUMN is_public INTEGER NOT NULL DEFAULT 0 CHECK (is_public IN (0, 1));
+
+CREATE TABLE IF NOT EXISTS design_likes (
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  design_id TEXT NOT NULL REFERENCES designs(id) ON DELETE CASCADE,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (user_id, design_id)
+);
