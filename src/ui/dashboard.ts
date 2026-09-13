@@ -39,6 +39,13 @@ export function dashboardPage(): string {
       @keyframes brand-sheen { 0%,72% { transform:translateX(-120%); } 100% { transform:translateX(120%); } }
       @media (prefers-reduced-motion:reduce) { .hero h1 .hero-word,.hero h1 .hero-word::after { animation:none; } }
     </style>
+    <style>
+      /* Hero aligned to the original visual proposal: mural city, subject at right, copy at left. */
+      .hero { background-image:linear-gradient(90deg,rgba(4,12,28,.92) 3%,rgba(4,12,28,.58) 47%,rgba(4,12,28,.05) 80%),url('/images/pinoleros-hero.png') !important; background-size:cover !important; background-position:center !important; }
+      .hero::before { opacity:.28; } .hero-art { display:none; }
+      .hero h1::before { content:"TU IMAGINACIÓN"; color:#fff; background:none; -webkit-background-clip:initial; background-clip:initial; }
+      .hero h1::after { content:"NO TIENE LÍMITES"; display:block; width:auto; height:auto; margin:0; border-radius:0; background:none; color:#ffd21f; font-size:clamp(2.65rem,4.9vw,5.3rem); line-height:.8; transform:none; animation:brush-in .72s .3s cubic-bezier(.18,.9,.24,1) both; }
+    </style>
   </head>
   <body>
     <div class="app">
