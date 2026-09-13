@@ -90,6 +90,18 @@ export function dashboardPage(): string {
       @keyframes hero-light-pass { 0%,30% { transform:translateX(-130%); } 66%,100% { transform:translateX(130%); } }
       @media (prefers-reduced-motion:reduce) { .hero-slide.active,.hero-slides::after { animation:none; } }
     </style>
+    <style>
+      /* Distinct bird poses while keeping a consistent, readable campaign system. */
+      .hero-slide[data-slide="0"] { background-image:url('/images/pinoleros-reference-hero.png') !important; }
+      .hero-slide[data-slide="1"] { background-image:url('/images/pinoleros-hero-print.png') !important; filter:none; }
+      .hero-slide[data-slide="2"] { background-image:url('/images/pinoleros-hero.png') !important; filter:none; }
+      .hero-slide[data-slide="1"]::before,.hero-slide[data-slide="2"]::before { display:block !important; background:linear-gradient(90deg,rgba(3,10,26,.94),rgba(3,10,26,.72) 43%,rgba(3,10,26,.08) 76%) !important; }
+      .hero-slide[data-slide="1"] .slide-copy,.hero-slide[data-slide="2"] .slide-copy { display:block; text-shadow:0 3px 12px #000; }
+      .hero-slide[data-slide="0"] .slide-copy { display:block; max-width:42%; } .hero-slide[data-slide="0"] .slide-copy>*:not(.slide-actions) { display:none; }
+      .hero-slide .slide-actions { gap:12px; } .hero-slide .start,.hero-slide .print { min-width:170px; } .hero-slide .print { position:relative; overflow:hidden; }
+      .hero-slide .print::after { content:""; position:absolute; inset:0; background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.68) 50%,transparent 70%); transform:translateX(-115%); animation:print-sheen 3.4s ease-in-out infinite; }
+      @keyframes print-sheen { 60%,100% { transform:translateX(115%); } }
+    </style>
   </head>
   <body>
     <div class="app">
