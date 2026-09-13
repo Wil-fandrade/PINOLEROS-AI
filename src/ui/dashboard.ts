@@ -112,6 +112,92 @@ export function dashboardPage(): string {
       .hero-slide .start,.hero-slide .print { min-width:0; white-space:nowrap; padding:11px 16px; font-size:.86rem; }
       @media (max-width:720px) { .hero { min-height:390px; } .hero-slide { background-size:auto 100% !important; background-position:center !important; } .hero-slide .slide-copy { max-width:82% !important; padding-top:62px; } .hero-slide .slide-actions { left:18px; right:auto; top:14px; gap:7px; } .hero-slide .start,.hero-slide .print { padding:9px 11px; font-size:.73rem; } .slide-copy h1 { font-size:clamp(2.1rem,11vw,3.2rem); } }
     </style>
+    <style>
+      /* Approved campaign lettering is supplied artwork: identical in every slide. */
+      .hero { min-height:440px; background:#061426 !important; }
+      .hero-slide,
+      .hero-slide[data-slide="0"],
+      .hero-slide[data-slide="1"],
+      .hero-slide[data-slide="2"] {
+        background-color:#061426 !important;
+        background-repeat:no-repeat !important;
+        background-size:contain !important;
+        background-position:right center !important;
+      }
+      .hero-slide[data-slide="0"] { background-image:url('/images/pinoleros-hero.png') !important; }
+      .hero-slide[data-slide="1"] { background-image:url('/images/pinoleros-hero-print.png') !important; }
+      .hero-slide[data-slide="2"] { background-image:url('/images/pinoleros-falcon-pointing.png') !important; }
+      .hero-slide::before,
+      .hero-slide[data-slide="2"]::after { display:none !important; }
+      .hero-slide .slide-copy {
+        position:absolute !important;
+        inset:0 !important;
+        z-index:3 !important;
+        display:block !important;
+        max-width:none !important;
+        padding:0 !important;
+        text-shadow:none !important;
+      }
+      .hero-slide .slide-copy > :not(.slide-actions) {
+        position:absolute !important;
+        width:1px !important;
+        height:1px !important;
+        padding:0 !important;
+        margin:-1px !important;
+        overflow:hidden !important;
+        clip:rect(0,0,0,0) !important;
+        white-space:nowrap !important;
+        border:0 !important;
+      }
+      .hero-slide .slide-copy::before {
+        content:"";
+        position:absolute;
+        top:30px;
+        left:40px;
+        width:min(430px,45%);
+        aspect-ratio:430 / 214;
+        background:url('/images/pinoleros-hero-copy.png') left top / contain no-repeat;
+        filter:drop-shadow(0 5px 12px rgba(0,0,0,.34));
+        animation:copy-settle .8s cubic-bezier(.18,.9,.24,1) both;
+      }
+      .hero-slide .slide-actions {
+        position:absolute !important;
+        z-index:4 !important;
+        top:auto !important;
+        right:auto !important;
+        bottom:36px !important;
+        left:40px !important;
+        display:flex !important;
+        gap:12px !important;
+        margin:0 !important;
+        padding:0 !important;
+      }
+      .hero-slide .start,
+      .hero-slide .print {
+        min-width:0 !important;
+        padding:13px 20px !important;
+        font-size:.9rem !important;
+      }
+      .slide-dots { bottom:17px !important; }
+      @keyframes copy-settle { from { opacity:0; transform:translateX(-16px); } to { opacity:1; transform:none; } }
+      @media (max-width:1100px) {
+        .hero { min-height:400px; }
+        .hero-slide .slide-copy::before { left:30px; top:27px; width:min(430px,50%); }
+        .hero-slide .slide-actions { left:30px !important; bottom:31px !important; }
+      }
+      @media (max-width:720px) {
+        .hero { min-height:390px; }
+        .hero-slide,
+        .hero-slide[data-slide="0"],
+        .hero-slide[data-slide="1"],
+        .hero-slide[data-slide="2"] { background-size:auto 75% !important; background-position:right bottom !important; }
+        .hero-slide .slide-copy::before { top:22px; left:18px; width:min(430px,88vw); }
+        .hero-slide .slide-actions { left:18px !important; bottom:36px !important; gap:8px !important; }
+        .hero-slide .start,.hero-slide .print { padding:10px 12px !important; font-size:.74rem !important; }
+        .slide-dots { bottom:14px !important; }
+      }
+      @media (prefers-reduced-motion:reduce) { .hero-slide .slide-copy::before { animation:none; } }
+    </style>
   </head>
   <body>
     <div class="app">
