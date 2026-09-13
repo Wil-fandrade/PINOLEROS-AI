@@ -265,6 +265,35 @@ export function dashboardPage(): string {
       }
       @media (prefers-reduced-motion:reduce) { .hero-slide[data-slide="1"]::after,.hero-slide[data-slide="2"]::after { animation:none !important; } }
     </style>
+    <style>
+      /* Foreground CTAs remain interactive above every original hero frame. */
+      .hero-slide .slide-actions {
+        z-index:6 !important;
+        display:flex !important;
+        align-items:stretch !important;
+        width:auto !important;
+        height:14.5% !important;
+        gap:1.05% !important;
+      }
+      .hero-slide .start,
+      .hero-slide .print {
+        display:block !important;
+        height:100% !important;
+        min-height:0 !important;
+        padding:0 17px !important;
+        opacity:1 !important;
+        white-space:nowrap !important;
+        font-size:clamp(.58rem,1.15vw,.92rem) !important;
+        line-height:1 !important;
+      }
+      .hero-slide .start { width:20.8vw !important; max-width:208px !important; }
+      .hero-slide .print { width:14.2vw !important; max-width:142px !important; }
+      @media (max-width:720px) {
+        .hero-slide .slide-actions { gap:1.2% !important; }
+        .hero-slide .start { width:20.8vw !important; padding:0 6px !important; }
+        .hero-slide .print { width:14.2vw !important; padding:0 5px !important; }
+      }
+    </style>
   </head>
   <body>
     <div class="app">
