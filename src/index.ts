@@ -2,7 +2,7 @@ import { home } from "./routes/home";
 import { health } from "./routes/health";
 import { createDesign, dashboardData } from "./routes/api/dashboard";
 import { login, logout, me, register } from "./routes/api/auth";
-import { generate, media, myCreations, selectCreation } from "./routes/api/creations";
+import { createPrintOrder, generate, media, myCreations, selectCreation } from "./routes/api/creations";
 
 /** Cloudflare Worker entry point. Keep request routing here and endpoint code in routes/. */
 export default {
@@ -17,7 +17,7 @@ export default {
       return health();
     }
 
-    if (request.method === "GET" && pathname === "/") {
+    if (request.method === "GET" && (pathname === "/" || pathname === "/mi-espacio")) {
       return home();
     }
 
@@ -36,6 +36,7 @@ export default {
     if (request.method === "POST" && pathname === "/api/generate") return generate(request, env);
     if (request.method === "POST" && pathname === "/api/creations") return selectCreation(request, env);
     if (request.method === "GET" && pathname === "/api/creations") return myCreations(request, env);
+    if (request.method === "POST" && pathname === "/api/print-orders") return createPrintOrder(request, env);
     if (request.method === "GET" && pathname.startsWith("/api/media/")) return media(request, env, pathname.slice("/api/media/".length));
 
     return new Response("Not Found", { status: 404 });

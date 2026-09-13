@@ -2,6 +2,7 @@ import { getUser } from "../../lib/auth";
 
 interface GenerateInput { prompt?: unknown; style?: unknown; }
 interface SelectInput { title?: unknown; style?: unknown; prompt?: unknown; image?: unknown; isPublic?: unknown; }
+interface PrintOrderInput { designId?: unknown; product?: unknown; }
 interface FluxResult { image: string; }
 
 function stringValue(value: unknown, max: number): string | null {
@@ -65,6 +66,22 @@ export async function myCreations(request: Request, env: Env): Promise<Response>
   const { results } = await env.DB.prepare("SELECT id, title, style, is_public, created_at FROM designs WHERE owner_id = ?1 ORDER BY created_at DESC")
     .bind(user.id).all<{ id: string; title: string; style: string; is_public: number; created_at: string }>();
   return Response.json({ creations: results.map((creation) => ({ ...creation, imageUrl: `/api/media/${creation.id}` })) });
+}
+
+/** Creates a print request for a creation owned by the current account. */
+export async function createPrintOrder(request: Request, env: Env): Promise<Response> {
+  const user = await getUser(request, env);
+  if (!user) return Response.json({ error: "Inicia sesión para imprimir tu diseño." }, { status: 401 });
+  let input: PrintOrderInput;
+  try { input = await request.json<PrintOrderInput>(); } catch { return Response.json({ error: "JSON inválido." }, { status: 400 }); }
+  const designId = stringValue(input.designId, 80);
+  const product = stringValue(input.product, 60);
+  if (!designId || !product) return Response.json({ error: "Selecciona un diseño y un producto." }, { status: 400 });
+  const design = await env.DB.prepare("SELECT id, title FROM designs WHERE id = ?1 AND owner_id = ?2").bind(designId, user.id).first<{ id: string; title: string }>();
+  if (!design) return Response.json({ error: "No tienes acceso a este diseño." }, { status: 404 });
+  const id = crypto.randomUUID();
+  await env.DB.prepare("INSERT INTO print_orders (id, user_id, design_id, product) VALUES (?1, ?2, ?3, ?4)").bind(id, user.id, design.id, product).run();
+  return Response.json({ id, design: design.title, product, status: "requested" }, { status: 201 });
 }
 
 export async function media(request: Request, env: Env, designId: string): Promise<Response> {
