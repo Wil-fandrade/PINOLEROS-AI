@@ -62,6 +62,18 @@ export function dashboardPage(): string {
       .hero-slide::before { content:""; position:absolute; inset:0; background:linear-gradient(90deg,rgba(3,11,27,.94),rgba(4,13,31,.65) 42%,rgba(3,11,27,.05) 75%); } .hero-slide[data-slide="0"] { background-image:url('/images/pinoleros-reference-hero.png'); } .hero-slide[data-slide="1"] { background-image:url('/images/pinoleros-hero.png'); } .hero-slide[data-slide="2"] { background-image:radial-gradient(circle at 75% 20%,#e718a0 0,transparent 23%),radial-gradient(circle at 70% 85%,#00cbed 0,transparent 27%),linear-gradient(125deg,#07142d,#1d0d46); } .hero-slide[data-slide="2"]::after { content:""; position:absolute; inset:0 0 0 38%; background:url('/images/pinoleros-falcon-pointing.png') right bottom/contain no-repeat; filter:drop-shadow(0 16px 25px #0009); animation:slide-falcon 4s ease-in-out infinite; }
       .slide-copy { position:relative; z-index:2; max-width:48%; } .slide-kicker { color:#00d9ff; font-weight:900; letter-spacing:.12em; font-size:.72rem; } .slide-copy h1 { margin:9px 0 14px; font-family:Impact,Haettenschweiler,"Arial Narrow Bold",sans-serif; font-style:italic; font-size:clamp(2.5rem,4.7vw,5rem); line-height:.82; letter-spacing:-.04em; text-transform:uppercase; color:#fff; } .slide-copy h1 b { display:block; color:#ffd21f; } .slide-copy p { max-width:420px; line-height:1.45; color:#e3edf8; } .slide-actions { display:flex; gap:10px; margin-top:16px; } .slide-actions button { border:0; border-radius:999px; padding:13px 19px; color:white; font-weight:850; } .start { background:linear-gradient(90deg,#dd119c,#6948ff 54%,#00d1ef); box-shadow:0 8px 24px #571abb99; animation:cta-pulse 2.5s ease-in-out infinite; } .print { background:linear-gradient(90deg,#ffbd25,#ffdb53); color:#18223b !important; box-shadow:0 8px 22px #ffce3377; } .slide-dots { position:absolute; z-index:4; bottom:14px; left:50%; display:flex; gap:7px; transform:translateX(-50%); } .slide-dots button { width:8px; height:8px; border:0; border-radius:99px; padding:0; background:#e6ecf799; } .slide-dots button.active { width:26px; background:#fff; } @keyframes slide-falcon { 50% { transform:translateY(-9px) rotate(-1deg); } } @keyframes cta-pulse { 50% { transform:translateY(-2px) scale(1.035); box-shadow:0 12px 34px #00d9ff88; } } @media (max-width:720px){.hero{min-height:315px}.hero-slide{padding:27px 22px}.slide-copy{max-width:74%}.slide-copy h1{font-size:2.6rem}.hero-slide[data-slide="2"]::after{inset:0 -28% 0 25%;opacity:.7}.slide-actions button{padding:11px 13px;font-size:.79rem}}
     </style>
+    <style>
+      /* Preserve all approved copy while giving each hero slide safe visual breathing room. */
+      .hero { min-height:440px; border-radius:18px; }
+      .hero-slide { padding:42px 42px 74px; background-repeat:no-repeat; }
+      .hero-slide[data-slide="0"] { background-size:100% 100%; background-position:center; }
+      .hero-slide[data-slide="1"] { background-size:contain; background-position:right center; background-color:#07152c; }
+      .hero-slide[data-slide="2"]::after { inset:2% -2% 2% 36%; background-size:contain; }
+      .slide-copy { max-width:46%; } .slide-actions { position:relative; z-index:3; padding-bottom:2px; }
+      .slide-dots { bottom:20px; } .primary,.slide-actions .start { min-height:48px; }
+      @media (max-width:1100px) { .hero { min-height:400px; } .slide-copy { max-width:55%; } }
+      @media (max-width:720px) { .hero { min-height:365px; } .hero-slide { padding:28px 22px 70px; } .slide-copy { max-width:76%; } .hero-slide[data-slide="0"] { background-size:auto 100%; background-position:center; } }
+    </style>
   </head>
   <body>
     <div class="app">
