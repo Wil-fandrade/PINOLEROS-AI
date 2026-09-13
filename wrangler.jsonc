@@ -2,5 +2,13 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "pinoleros-ai",
   "main": "src/index.ts",
-  "compatibility_date": "2026-09-12"
+  "compatibility_date": "2026-09-12",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "pinoleros-ai-db",
+      "database_id": "11b3e334-8644-4412-81b5-4ac906dc277a",
+      "migrations_dir": "migrations"
+    }
+  ]
 }
