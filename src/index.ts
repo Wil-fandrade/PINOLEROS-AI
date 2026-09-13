@@ -7,6 +7,10 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const { pathname } = new URL(request.url);
 
+    if (request.method === "GET" && pathname.startsWith("/images/")) {
+      return env.ASSETS.fetch(request);
+    }
+
     if (request.method === "GET" && pathname === "/health") {
       return health();
     }

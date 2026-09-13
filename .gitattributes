@@ -1,0 +1,2 @@
+# Wrangler generates this declaration file; preserve its exact generated formatting.
+worker-configuration.d.ts -whitespace
