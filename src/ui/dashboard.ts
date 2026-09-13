@@ -102,6 +102,16 @@ export function dashboardPage(): string {
       .hero-slide .print::after { content:""; position:absolute; inset:0; background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.68) 50%,transparent 70%); transform:translateX(-115%); animation:print-sheen 3.4s ease-in-out infinite; }
       @keyframes print-sheen { 60%,100% { transform:translateX(115%); } }
     </style>
+    <style>
+      /* Clean imagery, with copy and actions kept as responsive interactive layers. */
+      .hero-slide[data-slide="0"] { background-image:url('/images/pinoleros-hero.png') !important; }
+      .hero-slide[data-slide="0"] .slide-copy { display:block; max-width:46%; text-shadow:0 3px 12px #000; }
+      .hero-slide[data-slide="0"] .slide-copy>*:not(.slide-actions) { display:block; }
+      .hero-slide .slide-copy { padding-top:44px; }
+      .hero-slide .slide-actions { position:absolute; z-index:4; top:22px; right:26px; margin:0; padding:0; display:flex; gap:10px; }
+      .hero-slide .start,.hero-slide .print { min-width:0; white-space:nowrap; padding:11px 16px; font-size:.86rem; }
+      @media (max-width:720px) { .hero { min-height:390px; } .hero-slide { background-size:auto 100% !important; background-position:center !important; } .hero-slide .slide-copy { max-width:82% !important; padding-top:62px; } .hero-slide .slide-actions { left:18px; right:auto; top:14px; gap:7px; } .hero-slide .start,.hero-slide .print { padding:9px 11px; font-size:.73rem; } .slide-copy h1 { font-size:clamp(2.1rem,11vw,3.2rem); } }
+    </style>
   </head>
   <body>
     <div class="app">
