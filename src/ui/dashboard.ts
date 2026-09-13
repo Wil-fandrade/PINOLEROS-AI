@@ -78,6 +78,18 @@ export function dashboardPage(): string {
       .hero-slide[data-slide="1"]::before,.hero-slide[data-slide="2"]::before { background:linear-gradient(90deg,rgba(3,10,26,.94),rgba(3,10,26,.61) 44%,rgba(3,10,26,.06) 77%),repeating-linear-gradient(116deg,transparent 0 48px,rgba(0,215,255,.17) 49px 53px,transparent 54px 105px),repeating-linear-gradient(19deg,transparent 0 73px,rgba(255,35,169,.14) 74px 78px,transparent 79px 152px); }
       .hero-slide[data-slide="2"] { background-image:radial-gradient(circle at 92% 10%,#fdce24 0,transparent 13%),radial-gradient(circle at 67% 75%,#00d9ff 0,transparent 29%),repeating-linear-gradient(142deg,#101c46 0 26px,#21114c 27px 52px,#0d2952 53px 78px); }
     </style>
+    <style>
+      /* Every slide preserves the approved hero artwork, including the exact artistic lettering. */
+      .hero-slide[data-slide="0"],.hero-slide[data-slide="1"],.hero-slide[data-slide="2"] { background-image:url('/images/pinoleros-reference-hero.png') !important; background-size:100% 100% !important; background-position:center !important; }
+      .hero-slide[data-slide="1"] { filter:saturate(1.08) brightness(1.04); } .hero-slide[data-slide="2"] { filter:saturate(1.14) contrast(1.04); }
+      .hero-slide::before,.hero-slide[data-slide="2"]::after { display:none !important; }
+      .hero-slide .slide-copy { display:none; }
+      .hero-slide.active { animation:approved-hero-motion 6.5s ease-in-out both; }
+      .hero-slides::after { content:""; position:absolute; inset:0; pointer-events:none; background:linear-gradient(108deg,transparent 34%,rgba(255,255,255,.18) 48%,transparent 62%); transform:translateX(-130%); animation:hero-light-pass 6.5s ease-in-out infinite; mix-blend-mode:screen; }
+      @keyframes approved-hero-motion { 0% { opacity:0; transform:scale(.985); } 16%,84% { opacity:1; transform:scale(1); } 100% { opacity:0; transform:scale(1.008); } }
+      @keyframes hero-light-pass { 0%,30% { transform:translateX(-130%); } 66%,100% { transform:translateX(130%); } }
+      @media (prefers-reduced-motion:reduce) { .hero-slide.active,.hero-slides::after { animation:none; } }
+    </style>
   </head>
   <body>
     <div class="app">
