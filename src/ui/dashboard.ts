@@ -46,6 +46,15 @@ export function dashboardPage(): string {
       .hero h1::before { content:"TU IMAGINACIÓN"; color:#fff; background:none; -webkit-background-clip:initial; background-clip:initial; }
       .hero h1::after { content:"NO TIENE LÍMITES"; display:block; width:auto; height:auto; margin:0; border-radius:0; background:none; color:#ffd21f; font-size:clamp(2.65rem,4.9vw,5.3rem); line-height:.8; transform:none; animation:brush-in .72s .3s cubic-bezier(.18,.9,.24,1) both; }
     </style>
+    <style>
+      /* Exact hero artwork supplied in the approved original concept. */
+      .hero { min-height:0; aspect-ratio:1001/357; padding:0; background-image:url('/images/pinoleros-reference-hero.png') !important; background-size:103% 103% !important; background-position:center; animation:hero-art-drift 8s ease-in-out infinite alternate; }
+      .hero::before,.hero::after,.hero-art { display:none !important; }
+      .hero-content { position:absolute; left:4%; top:53%; width:25%; height:16%; max-width:none; opacity:0; animation:none; }
+      .hero-content .primary { width:100%; height:100%; margin:0; }
+      @keyframes hero-art-drift { from { background-position:49% 49%; } to { background-position:51% 51%; } }
+      @media (prefers-reduced-motion:reduce) { .hero { animation:none; } }
+    </style>
   </head>
   <body>
     <div class="app">
