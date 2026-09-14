@@ -1,4 +1,5 @@
 import { home } from "./routes/home";
+import { studio } from "./routes/studio";
 import { health } from "./routes/health";
 import { createDesign, dashboardData } from "./routes/api/dashboard";
 import { login, logout, me, register } from "./routes/api/auth";
@@ -20,6 +21,7 @@ export default {
     if (request.method === "GET" && (pathname === "/" || pathname === "/mi-espacio")) {
       return home();
     }
+    if (request.method === "GET" && pathname === "/crear") return studio();
 
     if (request.method === "GET" && pathname === "/api/dashboard") {
       return dashboardData(env);
