@@ -13,7 +13,8 @@ async function sha256(value: string): Promise<string> {
 
 export async function hashPassword(password: string, salt = crypto.getRandomValues(new Uint8Array(16))): Promise<{ hash: string; salt: string }> {
   const key = await crypto.subtle.importKey("raw", encoder.encode(password), "PBKDF2", false, ["deriveBits"]);
-  const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", salt, iterations: 210_000, hash: "SHA-256" }, key, 256);
+  // Cloudflare Workers supports PBKDF2 iteration counts up to 100,000.
+  const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", salt, iterations: 100_000, hash: "SHA-256" }, key, 256);
   return { hash: toBase64(new Uint8Array(bits)), salt: toBase64(salt) };
 }
 
