@@ -30,15 +30,15 @@ export async function generate(request: Request, env: Env): Promise<Response> {
   const creativity = stringValue(input.creativity, 40) ?? "alta";
   const enrichedPrompt = `Create an original premium ${style} artistic print design for a ${product}. ${prompt}. Compose a non-square, print-ready ${format} artwork with an organic silhouette, rich color and professional composition. Creativity: ${creativity}. No logos, watermark, or text unless explicitly requested. Avoid product mockups: generate the art asset only.`;
   try {
-    const imageModel = env.AI as unknown as { run: (model: string, input: { prompt: string; seed: number; steps: number }) => Promise<FluxResult> };
-    const [first, second] = await Promise.all([1, 2].map((variant) => imageModel.run("@cf/black-forest-labs/flux-1-schnell", {
-      prompt: enrichedPrompt,
-      seed: Math.floor(Math.random() * 2_000_000_000) + variant,
-      steps: 4,
-    })));
+    const imageModel = env.AI as unknown as { run: (model: string, input: { prompt: string; steps?: number }) => Promise<FluxResult> };
+    const [first, second] = await Promise.all([
+      imageModel.run("@cf/black-forest-labs/flux-1-schnell", { prompt: `${enrichedPrompt} Variant A: bold central composition with dynamic diagonal movement.`, steps: 4 }),
+      imageModel.run("@cf/black-forest-labs/flux-1-schnell", { prompt: `${enrichedPrompt} Variant B: a distinctly different composition with layered depth and asymmetrical energy.`, steps: 4 }),
+    ]);
     return Response.json({ options: [first, second].map((result, index) => ({ id: `preview-${index + 1}`, image: `data:image/jpeg;charset=utf-8;base64,${result.image}` })) });
-  } catch {
-    return Response.json({ error: "La IA no está disponible en este momento. Inténtalo de nuevo." }, { status: 503 });
+  } catch (error) {
+    console.error("Workers AI generation failed", error);
+    return Response.json({ error: "La IA no pudo generar el diseño ahora mismo. Inténtalo de nuevo en unos segundos." }, { status: 503 });
   }
 }
 
