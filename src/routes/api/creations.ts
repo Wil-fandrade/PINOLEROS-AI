@@ -1,8 +1,8 @@
 import { getUser } from "../../lib/auth";
 
-interface GenerateInput { prompt?: unknown; style?: unknown; }
+interface GenerateInput { prompt?: unknown; style?: unknown; format?: unknown; product?: unknown; creativity?: unknown; }
 interface SelectInput { title?: unknown; style?: unknown; prompt?: unknown; image?: unknown; isPublic?: unknown; }
-interface PrintOrderInput { designId?: unknown; product?: unknown; }
+interface PrintOrderInput { designId?: unknown; product?: unknown; color?: unknown; position?: unknown; configuration?: unknown; }
 interface FluxResult { image: string; }
 
 function stringValue(value: unknown, max: number): string | null {
@@ -25,7 +25,10 @@ export async function generate(request: Request, env: Env): Promise<Response> {
   const prompt = stringValue(input.prompt, 1_500);
   const style = stringValue(input.style, 60) ?? "Urbano";
   if (!prompt) return Response.json({ error: "Describe tu idea para generar las propuestas." }, { status: 400 });
-  const enrichedPrompt = `Create an original premium ${style} design for a print product. ${prompt}. No logos, no watermark, no text unless explicitly requested. Rich color, professional composition.`;
+  const format = stringValue(input.format, 60) ?? "vertical adaptable";
+  const product = stringValue(input.product, 60) ?? "camiseta";
+  const creativity = stringValue(input.creativity, 40) ?? "alta";
+  const enrichedPrompt = `Create an original premium ${style} artistic print design for a ${product}. ${prompt}. Compose a non-square, print-ready ${format} artwork with an organic silhouette, rich color and professional composition. Creativity: ${creativity}. No logos, watermark, or text unless explicitly requested. Avoid product mockups: generate the art asset only.`;
   try {
     const imageModel = env.AI as unknown as { run: (model: string, input: { prompt: string; seed: number; steps: number }) => Promise<FluxResult> };
     const [first, second] = await Promise.all([1, 2].map((variant) => imageModel.run("@cf/black-forest-labs/flux-1-schnell", {
@@ -68,6 +71,17 @@ export async function myCreations(request: Request, env: Env): Promise<Response>
   return Response.json({ creations: results.map((creation) => ({ ...creation, imageUrl: `/api/media/${creation.id}` })) });
 }
 
+/** Removes only a creation owned by the active account, from both R2 and D1. */
+export async function deleteCreation(request: Request, env: Env, designId: string): Promise<Response> {
+  const user = await getUser(request, env);
+  if (!user) return Response.json({ error: "Inicia sesión para modificar tu biblioteca." }, { status: 401 });
+  const design = await env.DB.prepare("SELECT r2_key FROM designs WHERE id = ?1 AND owner_id = ?2").bind(designId, user.id).first<{ r2_key: string | null }>();
+  if (!design) return Response.json({ error: "No tienes acceso a este diseño." }, { status: 404 });
+  if (design.r2_key) await env.CREATIONS.delete(design.r2_key);
+  await env.DB.prepare("DELETE FROM designs WHERE id = ?1 AND owner_id = ?2").bind(designId, user.id).run();
+  return Response.json({ deleted: true });
+}
+
 /** Creates a print request for a creation owned by the current account. */
 export async function createPrintOrder(request: Request, env: Env): Promise<Response> {
   const user = await getUser(request, env);
@@ -80,7 +94,11 @@ export async function createPrintOrder(request: Request, env: Env): Promise<Resp
   const design = await env.DB.prepare("SELECT id, title FROM designs WHERE id = ?1 AND owner_id = ?2").bind(designId, user.id).first<{ id: string; title: string }>();
   if (!design) return Response.json({ error: "No tienes acceso a este diseño." }, { status: 404 });
   const id = crypto.randomUUID();
-  await env.DB.prepare("INSERT INTO print_orders (id, user_id, design_id, product) VALUES (?1, ?2, ?3, ?4)").bind(id, user.id, design.id, product).run();
+  const color = stringValue(input.color, 40);
+  const position = stringValue(input.position, 40);
+  const configuration = stringValue(input.configuration, 1_000);
+  await env.DB.prepare("INSERT INTO print_orders (id, user_id, design_id, product, product_color, design_position, configuration) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)")
+    .bind(id, user.id, design.id, product, color, position, configuration).run();
   return Response.json({ id, design: design.title, product, status: "requested" }, { status: 201 });
 }
 

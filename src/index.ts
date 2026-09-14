@@ -3,7 +3,7 @@ import { studio } from "./routes/studio";
 import { health } from "./routes/health";
 import { createDesign, dashboardData } from "./routes/api/dashboard";
 import { login, logout, me, register } from "./routes/api/auth";
-import { createPrintOrder, generate, media, myCreations, selectCreation } from "./routes/api/creations";
+import { createPrintOrder, deleteCreation, generate, media, myCreations, selectCreation } from "./routes/api/creations";
 
 /** Cloudflare Worker entry point. Keep request routing here and endpoint code in routes/. */
 export default {
@@ -38,6 +38,7 @@ export default {
     if (request.method === "POST" && pathname === "/api/generate") return generate(request, env);
     if (request.method === "POST" && pathname === "/api/creations") return selectCreation(request, env);
     if (request.method === "GET" && pathname === "/api/creations") return myCreations(request, env);
+    if (request.method === "DELETE" && pathname.startsWith("/api/creations/")) return deleteCreation(request, env, pathname.slice("/api/creations/".length));
     if (request.method === "POST" && pathname === "/api/print-orders") return createPrintOrder(request, env);
     if (request.method === "GET" && pathname.startsWith("/api/media/")) return media(request, env, pathname.slice("/api/media/".length));
 
