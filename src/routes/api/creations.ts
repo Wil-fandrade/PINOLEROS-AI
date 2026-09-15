@@ -25,7 +25,7 @@ function printArtDirection(input: PromptAssistInput): string {
   const product = stringValue(input.product, 60) ?? "Camiseta";
   const colors = stringValue(input.colors, 100) ?? "fucsia, cian y amarillo";
   const creativity = stringValue(input.creativity, 40) ?? "Alta";
-  return `Idea central: ${prompt}. Dirección visual: ${style}. Paleta: ${colors}. Composición ${format}, pensada para ${product}: silueta orgánica, foco visual claro, profundidad en capas, ritmo dinámico y áreas de respiración para que la tinta se integre en la prenda. Si hay personajes: elenco de fantasía completamente original, anatomía coherente, expresiones intensas, vestuario con materiales creíbles y poses de acción. Iluminación cinematográfica, detalles de alta calidad, arte sin marco ni borde cuadrado, sin marcas de agua, logotipos ni reproducciones de personajes existentes. Creatividad: ${creativity}.`;
+  return `Idea central: ${prompt}. Dirección visual: ${style}. Paleta: ${colors}. Encadre ${format} para ${product}, con foco visual claro, profundidad en capas y ritmo dinámico. Si hay personajes: elenco de fantasía completamente original, anatomía coherente, expresiones intensas, vestuario con materiales creíbles y poses de acción. Realismo cinematográfico: iluminación dramática, detalles de alta calidad, perspectiva editorial, atmósfera y textura física. Sin marcas de agua, logotipos ni reproducciones de personajes existentes. Creatividad: ${creativity}.`;
 }
 
 /** Turns a short user idea into an art-directable, print-safe prompt with Workers AI. */
@@ -39,7 +39,7 @@ export async function promptAssist(request: Request, env: Env): Promise<Response
   try {
     const textModel = env.AI as unknown as { run: (model: string, input: { prompt: string; max_tokens: number }) => Promise<TextResult> };
     const result = await textModel.run("@cf/meta/llama-3.1-8b-instruct-fast", {
-      prompt: `You are an expert art director for premium apparel print designs. Rewrite the following creative brief as one concise English image-generation prompt. Preserve the subject, make the composition print-safe and non-square, describe subject, palette, lighting, depth, material/texture and visual hierarchy. Do not add brands, copyrighted characters, watermarks, or explanatory text. Brief: ${fallback}`,
+      prompt: `You are an expert cinematic image art director. Rewrite the following creative brief as one concise English image-generation prompt. Preserve the subject, describe a hyper-realistic cinematic scene with subject, palette, lighting, depth, materials, anatomy and visual hierarchy. Keep the requested framing. Do not add brands, copyrighted characters, watermarks, or explanatory text. This is image creation, not print preparation. Brief: ${fallback}`,
       max_tokens: 380,
     });
     const enhanced = typeof result.response === "string" ? result.response.trim().slice(0, 1_500) : "";
@@ -62,7 +62,7 @@ export async function generate(request: Request, env: Env): Promise<Response> {
   const format = stringValue(input.format, 60) ?? "vertical adaptable";
   const product = stringValue(input.product, 60) ?? "camiseta";
   const creativity = stringValue(input.creativity, 40) ?? "alta";
-  const enrichedPrompt = `Create an original premium ${style} artistic print design for a ${product}. ${prompt}. Compose a non-square, print-ready ${format} artwork with an organic silhouette, intentional visual hierarchy, layered depth, tactile material detail and rich color. For any characters: create original fantasy characters with coherent anatomy, expressive faces, believable costume construction and powerful action-ready poses. Use cinematic key light, dramatic rim light, atmospheric depth, editorial framing and a strong focal point. Creativity: ${creativity}. No logos, watermark, or text unless explicitly requested. Do not reproduce copyrighted characters. Avoid product mockups: generate the art asset only.`;
+  const enrichedPrompt = `Create an original premium ${style} hyper-realistic cinematic image. ${prompt}. Use ${format} framing with an intentional focal point, layered atmospheric depth, tactile material detail, physically believable lighting and rich color. For any characters: create original fantasy characters with coherent anatomy, expressive faces, believable costume construction and powerful action-ready poses. Use cinematic key light, dramatic rim light, editorial framing and high-end film still realism. Creativity: ${creativity}. No logos, watermark, or text unless explicitly requested. Do not reproduce copyrighted characters. This is the original image creation stage; do not make a product mockup or a print layout.`;
   try {
     const imageModel = env.AI as unknown as { run: (model: string, input: { prompt: string; steps?: number }) => Promise<FluxResult> };
     const [first, second] = await Promise.all([
