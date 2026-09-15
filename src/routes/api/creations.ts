@@ -25,7 +25,7 @@ function printArtDirection(input: PromptAssistInput): string {
   const product = stringValue(input.product, 60) ?? "Camiseta";
   const colors = stringValue(input.colors, 100) ?? "fucsia, cian y amarillo";
   const creativity = stringValue(input.creativity, 40) ?? "Alta";
-  return `Idea central: ${prompt}. Dirección visual: ${style}. Paleta: ${colors}. Composición ${format}, pensada para ${product}: silueta orgánica, foco visual claro, profundidad en capas, ritmo dinámico y áreas de respiración para que la tinta se integre en la prenda. Iluminación cinematográfica, detalles de alta calidad, arte sin marco ni borde cuadrado, sin marcas de agua ni logotipos. Creatividad: ${creativity}.`;
+  return `Idea central: ${prompt}. Dirección visual: ${style}. Paleta: ${colors}. Composición ${format}, pensada para ${product}: silueta orgánica, foco visual claro, profundidad en capas, ritmo dinámico y áreas de respiración para que la tinta se integre en la prenda. Si hay personajes: elenco de fantasía completamente original, anatomía coherente, expresiones intensas, vestuario con materiales creíbles y poses de acción. Iluminación cinematográfica, detalles de alta calidad, arte sin marco ni borde cuadrado, sin marcas de agua, logotipos ni reproducciones de personajes existentes. Creatividad: ${creativity}.`;
 }
 
 /** Turns a short user idea into an art-directable, print-safe prompt with Workers AI. */
@@ -62,7 +62,7 @@ export async function generate(request: Request, env: Env): Promise<Response> {
   const format = stringValue(input.format, 60) ?? "vertical adaptable";
   const product = stringValue(input.product, 60) ?? "camiseta";
   const creativity = stringValue(input.creativity, 40) ?? "alta";
-  const enrichedPrompt = `Create an original premium ${style} artistic print design for a ${product}. ${prompt}. Compose a non-square, print-ready ${format} artwork with an organic silhouette, intentional visual hierarchy, layered depth, texture and rich color. Creativity: ${creativity}. No logos, watermark, or text unless explicitly requested. Avoid product mockups: generate the art asset only.`;
+  const enrichedPrompt = `Create an original premium ${style} artistic print design for a ${product}. ${prompt}. Compose a non-square, print-ready ${format} artwork with an organic silhouette, intentional visual hierarchy, layered depth, tactile material detail and rich color. For any characters: create original fantasy characters with coherent anatomy, expressive faces, believable costume construction and powerful action-ready poses. Use cinematic key light, dramatic rim light, atmospheric depth, editorial framing and a strong focal point. Creativity: ${creativity}. No logos, watermark, or text unless explicitly requested. Do not reproduce copyrighted characters. Avoid product mockups: generate the art asset only.`;
   try {
     const imageModel = env.AI as unknown as { run: (model: string, input: { prompt: string; steps?: number }) => Promise<FluxResult> };
     const [first, second] = await Promise.all([

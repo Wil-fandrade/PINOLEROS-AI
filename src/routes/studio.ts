@@ -3,7 +3,8 @@ import { studioPage } from "../ui/studio";
 export function studio(): Response {
   const page = studioPage()
     .replace("Generar 2 propuestas ✦", "Generar Diseño ✦")
-    .replace("</textarea>", `</textarea><div class="creative-helper"><button class="secondary" id="improve-prompt" type="button">✦ Mejorar mi idea con IA</button><span>La IA estructura tu concepto para una composición artística e imprimible.</span></div>`)
+    .replace("<button class=\"style\">Vintage</button>", "<button class=\"style\">Vintage</button><button class=\"style\">Cinemático</button>")
+    .replace("</textarea>", `</textarea><div class="creative-helper"><button class="secondary" id="improve-prompt" type="button">✦ Mejorar mi idea con IA</button><span>La IA estructura tu concepto para una composición artística e imprimible.</span></div><div class="prompt-presets" aria-label="Inspiración de dirección artística"><button type="button" data-inspiration="Cinematic original fantasy ensemble, hyper-realistic expressive faces, battle-ready poses, weathered armor, ruined city at golden dusk, dramatic depth and editorial lighting">⚔ Fantasía épica</button><button type="button" data-inspiration="Hyper-realistic urban hero, neon rain, layered streetwear, confident pose, cinematic cyan and fuchsia rim light, dynamic perspective">✦ Héroe urbano</button><button type="button" data-inspiration="Premium surreal animal mascot, energetic movement, vibrant ink textures, bold organic silhouette, print-ready visual hierarchy">◈ Mascota artística</button></div>`)
     .replace("</head>", `<style>
       body { font-size: 17px; }
       .styles { grid-template-columns: 1fr !important; gap: 9px !important; }
@@ -14,6 +15,9 @@ export function studio(): Response {
       .action { min-height: 42px; font-size: .9rem; }
       .creative-helper { display:flex; align-items:center; gap:12px; color:#b8d1e7; font-size:.86rem; }
       .creative-helper .secondary { padding:9px 12px; white-space:nowrap; }
+      .prompt-presets { display:flex; flex-wrap:wrap; gap:8px; }
+      .prompt-presets button { border:1px solid #315d85; border-radius:999px; padding:8px 11px; color:#d9efff; background:#091c36; font-size:.84rem; font-weight:800; }
+      .prompt-presets button:hover { border-color:#00d9ff; background:#0c4167; }
       @media (max-width: 720px) { body { font-size: 16px; } .styles { grid-template-columns: repeat(2, 1fr) !important; } .creative-helper { align-items:flex-start; flex-direction:column; } }
     </style></head>`)
     .replace("</body>", `<script>
@@ -29,6 +33,11 @@ export function studio(): Response {
         };
         format.addEventListener('change', applyFormat);
         new MutationObserver(applyFormat).observe(results, { childList: true });
+        document.querySelectorAll('[data-inspiration]').forEach((button) => button.addEventListener('click', () => {
+          prompt.value = prompt.value.trim() ? prompt.value.trim() + '. ' + button.dataset.inspiration : button.dataset.inspiration;
+          prompt.focus();
+          document.querySelector('#status').textContent = 'Dirección creativa añadida. Mejora la idea con IA o genera el diseño.';
+        }));
         improve.addEventListener('click', async () => {
           if (!prompt.value.trim()) { prompt.focus(); return; }
           const original = improve.textContent;
