@@ -1,9 +1,11 @@
 import { getUser } from "../../lib/auth";
 
 interface GenerateInput { prompt?: unknown; style?: unknown; format?: unknown; product?: unknown; creativity?: unknown; }
+interface PromptAssistInput { prompt?: unknown; style?: unknown; format?: unknown; product?: unknown; colors?: unknown; creativity?: unknown; }
 interface SelectInput { title?: unknown; style?: unknown; prompt?: unknown; image?: unknown; isPublic?: unknown; }
 interface PrintOrderInput { designId?: unknown; product?: unknown; color?: unknown; position?: unknown; configuration?: unknown; }
 interface FluxResult { image: string; }
+interface TextResult { response?: string; }
 
 function stringValue(value: unknown, max: number): string | null {
   return typeof value === "string" && value.trim().length > 0 && value.trim().length <= max ? value.trim() : null;
@@ -14,6 +16,38 @@ function bytesFromDataUri(dataUri: string): Uint8Array | null {
   if (!match) return null;
   const bytes = Uint8Array.from(atob(match[1]), (character) => character.charCodeAt(0));
   return bytes.byteLength <= 5 * 1024 * 1024 ? bytes : null;
+}
+
+function printArtDirection(input: PromptAssistInput): string {
+  const prompt = stringValue(input.prompt, 1_500) ?? "Diseño original de inspiración urbana";
+  const style = stringValue(input.style, 60) ?? "Urbano";
+  const format = stringValue(input.format, 60) ?? "Vertical 4:5";
+  const product = stringValue(input.product, 60) ?? "Camiseta";
+  const colors = stringValue(input.colors, 100) ?? "fucsia, cian y amarillo";
+  const creativity = stringValue(input.creativity, 40) ?? "Alta";
+  return `Idea central: ${prompt}. Dirección visual: ${style}. Paleta: ${colors}. Composición ${format}, pensada para ${product}: silueta orgánica, foco visual claro, profundidad en capas, ritmo dinámico y áreas de respiración para que la tinta se integre en la prenda. Iluminación cinematográfica, detalles de alta calidad, arte sin marco ni borde cuadrado, sin marcas de agua ni logotipos. Creatividad: ${creativity}.`;
+}
+
+/** Turns a short user idea into an art-directable, print-safe prompt with Workers AI. */
+export async function promptAssist(request: Request, env: Env): Promise<Response> {
+  const user = await getUser(request, env);
+  if (!user) return Response.json({ error: "Inicia sesión para usar el asistente creativo." }, { status: 401 });
+  let input: PromptAssistInput;
+  try { input = await request.json<PromptAssistInput>(); } catch { return Response.json({ error: "JSON inválido." }, { status: 400 }); }
+  if (!stringValue(input.prompt, 1_500)) return Response.json({ error: "Escribe una idea antes de mejorarla." }, { status: 400 });
+  const fallback = printArtDirection(input);
+  try {
+    const textModel = env.AI as unknown as { run: (model: string, input: { prompt: string; max_tokens: number }) => Promise<TextResult> };
+    const result = await textModel.run("@cf/meta/llama-3.1-8b-instruct-fast", {
+      prompt: `You are an expert art director for premium apparel print designs. Rewrite the following creative brief as one concise English image-generation prompt. Preserve the subject, make the composition print-safe and non-square, describe subject, palette, lighting, depth, material/texture and visual hierarchy. Do not add brands, copyrighted characters, watermarks, or explanatory text. Brief: ${fallback}`,
+      max_tokens: 380,
+    });
+    const enhanced = typeof result.response === "string" ? result.response.trim().slice(0, 1_500) : "";
+    return Response.json({ prompt: enhanced || fallback, assisted: Boolean(enhanced) });
+  } catch (error) {
+    console.error("Workers AI prompt assistant failed", error);
+    return Response.json({ prompt: fallback, assisted: false, notice: "La guía avanzada no respondió; aplicamos la dirección de impresión optimizada." });
+  }
 }
 
 /** Creates two preview-only image proposals. Nothing enters R2 until the user selects one. */
@@ -28,7 +62,7 @@ export async function generate(request: Request, env: Env): Promise<Response> {
   const format = stringValue(input.format, 60) ?? "vertical adaptable";
   const product = stringValue(input.product, 60) ?? "camiseta";
   const creativity = stringValue(input.creativity, 40) ?? "alta";
-  const enrichedPrompt = `Create an original premium ${style} artistic print design for a ${product}. ${prompt}. Compose a non-square, print-ready ${format} artwork with an organic silhouette, rich color and professional composition. Creativity: ${creativity}. No logos, watermark, or text unless explicitly requested. Avoid product mockups: generate the art asset only.`;
+  const enrichedPrompt = `Create an original premium ${style} artistic print design for a ${product}. ${prompt}. Compose a non-square, print-ready ${format} artwork with an organic silhouette, intentional visual hierarchy, layered depth, texture and rich color. Creativity: ${creativity}. No logos, watermark, or text unless explicitly requested. Avoid product mockups: generate the art asset only.`;
   try {
     const imageModel = env.AI as unknown as { run: (model: string, input: { prompt: string; steps?: number }) => Promise<FluxResult> };
     const [first, second] = await Promise.all([
