@@ -1,14 +1,23 @@
+import { account } from "./routes/account";
 import { home } from "./routes/home";
 import { studio } from "./routes/studio";
 import { health } from "./routes/health";
 import { createDesign, dashboardData } from "./routes/api/dashboard";
-import { login, logout, me, register } from "./routes/api/auth";
+import { changePassword, recoveryCode, recoverPassword, login, logout, me, register } from "./routes/api/auth";
 import { createPrintOrder, deleteCreation, generate, generationStatus, media, myCreations, promptAssist, selectCreation } from "./routes/api/creations";
 
 /** Cloudflare Worker entry point. Keep request routing here and endpoint code in routes/. */
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const { pathname } = new URL(request.url);
+    if (request.method === "POST" && pathname.startsWith("/api/auth/")) {
+      const origin = request.headers.get("origin");
+      if ((origin && origin !== new URL(request.url).origin) || request.headers.get("sec-fetch-site") === "cross-site") return new Response("Forbidden", { status: 403 });
+    }
+    if (request.method === "GET" && pathname === "/cuenta") return account();
+    if (request.method === "POST" && pathname === "/api/auth/change-password") return changePassword(request, env);
+    if (request.method === "POST" && pathname === "/api/auth/recovery-code") return recoveryCode(request, env);
+    if (request.method === "POST" && pathname === "/api/auth/recover") return recoverPassword(request, env);
 
     if (request.method === "GET" && pathname.startsWith("/images/")) {
       return env.ASSETS.fetch(request);

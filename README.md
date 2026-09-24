@@ -72,3 +72,23 @@ Fuentes oficiales verificadas:
 los endpoints; `src/ui/studio.ts` el estudio; `migrations/` el esquema de D1.
 Los trabajos del prototipo local están fuera de la aplicación, archivados en `tmp/`
 y excluidos de Git y del despliegue. Ninguna ruta publicada los utiliza.
+
+## Cuentas y recuperación de contraseña
+
+Las cuentas se guardan en D1 con contraseñas derivadas mediante PBKDF2 y sal
+individual. `/cuenta` permite cambiar la contraseña usando la actual, cerrar
+sesión y generar un código de recuperación aleatorio de un solo uso. El usuario
+debe guardar el código antes de olvidar su contraseña; solo su hash se almacena
+en D1. Generar otro código reemplaza el anterior. Cambiar o recuperar la
+contraseña invalida todos los códigos y sesiones de esa cuenta en la misma
+operación de base de datos.
+
+La recuperación requiere correo y código; no envía correos electrónicos. Las
+cuentas existentes sin código deben entrar primero para generar uno. Si el
+usuario perdió tanto la contraseña como el código, no hay recuperación autónoma
+hasta configurar un servicio de correo y verificación de titularidad.
+
+Aplica `0008_account_security.sql` antes de publicar. Los intentos de login,
+cambio de contraseña y recuperación comparten límites de 20 por cuenta y 100
+por IP por hora. `npm test` cubre almacenamiento, login, cambio de contraseña,
+revocación de sesiones, códigos de un solo uso, límites y solicitudes de otro origen.

@@ -9,7 +9,7 @@
     "deploy:dry-run": "wrangler deploy --dry-run",
     "typecheck": "tsc --noEmit",
     "check": "npm run typecheck && npm run deploy:dry-run",
-    "test": "esbuild tests/studio.test.mjs --bundle --platform=node --format=esm --packages=external --outfile=tmp/studio.test.mjs && node --test tmp/studio.test.mjs",
+    "test": "esbuild tests/*.test.mjs --bundle --platform=node --format=esm --packages=external --outdir=tmp/tests && node --test tmp/tests/*.test.js",
     "doctor": "node scripts/doctor.mjs",
     "db:migrate:remote": "wrangler d1 migrations apply pinoleros-ai-db --remote"
   },

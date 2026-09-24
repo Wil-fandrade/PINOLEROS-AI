@@ -7,7 +7,7 @@ function toBase64(bytes: Uint8Array): string {
   return btoa(binary);
 }
 
-async function sha256(value: string): Promise<string> {
+export async function sha256(value: string): Promise<string> {
   return toBase64(new Uint8Array(await crypto.subtle.digest("SHA-256", encoder.encode(value))));
 }
 
@@ -26,7 +26,7 @@ export async function verifyPassword(password: string, salt: string, expectedHas
 export function readSessionToken(request: Request): string | null {
   const cookie = request.headers.get("cookie") ?? "";
   const match = cookie.match(/(?:^|;\s*)pinoleros_session=([^;]+)/);
-  return match ? decodeURIComponent(match[1]) : null;
+  try { return match ? decodeURIComponent(match[1]) : null; } catch { return null; }
 }
 
 export async function getUser(request: Request, env: Env): Promise<{ id: string; email: string } | null> {
