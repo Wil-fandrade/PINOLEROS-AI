@@ -33,7 +33,7 @@ export async function getUser(request: Request, env: Env): Promise<{ id: string;
   const token = readSessionToken(request);
   if (!token) return null;
   const tokenHash = await sha256(token);
-  return env.DB.prepare("SELECT users.id, users.email, users.role FROM sessions JOIN users ON users.id = sessions.user_id WHERE sessions.token_hash = ?1 AND sessions.expires_at > CURRENT_TIMESTAMP")
+  return env.DB.prepare("SELECT users.id, users.email, users.role FROM sessions JOIN users ON users.id = sessions.user_id WHERE sessions.token_hash = ?1 AND sessions.expires_at > CURRENT_TIMESTAMP AND users.disabled = 0")
     .bind(tokenHash).first<{ id: string; email: string; role: "user" | "master" }>();
 }
 

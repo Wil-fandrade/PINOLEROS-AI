@@ -1,3 +1,4 @@
+import { admin } from "./routes/api/admin";
 import { account } from "./routes/account";
 import { home } from "./routes/home";
 import { studio } from "./routes/studio";
@@ -10,6 +11,7 @@ import { createPrintOrder, deleteCreation, generate, generationStatus, media, my
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const { pathname } = new URL(request.url);
+    if (pathname === "/admin" || pathname === "/api/admin" || pathname.startsWith("/api/admin/")) return admin(request, env);
     if (request.method === "POST" && pathname.startsWith("/api/auth/")) {
       const origin = request.headers.get("origin");
       if ((origin && origin !== new URL(request.url).origin) || request.headers.get("sec-fetch-site") === "cross-site") return new Response("Forbidden", { status: 403 });

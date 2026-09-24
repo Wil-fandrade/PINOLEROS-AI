@@ -92,3 +92,19 @@ Aplica `0008_account_security.sql` antes de publicar. Los intentos de login,
 cambio de contraseña y recuperación comparten límites de 20 por cuenta y 100
 por IP por hora. `npm test` cubre almacenamiento, login, cambio de contraseña,
 revocación de sesiones, códigos de un solo uso, límites y solicitudes de otro origen.
+
+## Administración master
+
+`/admin` permite a las cuentas master crear usuarios, editar nombre y teléfono,
+asignar roles, suspender/reactivar cuentas, revocar sesiones y restablecer la
+cuota diaria de IA. También permite consultar imágenes privadas, editar diseños
+y su visibilidad, eliminarlos y gestionar productos/estados de pedidos.
+Eliminar un diseño elimina sus pedidos asociados; el panel pide confirmación.
+Los listados tienen páginas de 50 registros. Las contraseñas y códigos no se
+incluyen en los listados.
+
+Aplica `0010_admin_access.sql` antes del despliegue. Todos los endpoints verifican
+la sesión y el rol en D1. Una cuenta suspendida no puede iniciar sesión; no se
+permite quitar el último master activo ni retirar el propio acceso en el panel.
+La gestión de infraestructura, facturación y proveedores externos se realiza en
+sus respectivas cuentas de servicio.

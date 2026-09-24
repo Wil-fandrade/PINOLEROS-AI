@@ -134,9 +134,9 @@ export async function createPrintOrder(request: Request, env: Env): Promise<Resp
 export async function media(request: Request, env: Env, designId: string): Promise<Response> {
   const user = await getUser(request, env);
   if (!user) return new Response("Unauthorized", { status: 401 });
-  const design = await env.DB.prepare("SELECT r2_key FROM designs WHERE id = ?1 AND owner_id = ?2").bind(designId, user.id).first<{ r2_key: string }>();
+  const design = await env.DB.prepare("SELECT r2_key FROM designs WHERE id = ?1 AND (owner_id = ?2 OR ?3 = 'master')").bind(designId, user.id, user.role).first<{ r2_key: string }>();
   if (!design?.r2_key) return new Response("Not Found", { status: 404 });
   const object = await env.CREATIONS.get(design.r2_key);
   if (!object) return new Response("Not Found", { status: 404 });
-  return new Response(object.body, { headers: { "content-type": object.httpMetadata?.contentType ?? "image/jpeg", "cache-control": "private, max-age=3600" } });
+  return new Response(object.body, { headers: { "content-type": object.httpMetadata?.contentType ?? "image/jpeg", "cache-control": "private, no-store" } });
 }

@@ -11,6 +11,7 @@ function environment(){
  db.exec(`PRAGMA foreign_keys=ON; CREATE TABLE users(id TEXT PRIMARY KEY,email TEXT UNIQUE COLLATE NOCASE,phone TEXT,name TEXT,nickname TEXT,password_hash TEXT,password_salt TEXT); CREATE TABLE sessions(token_hash TEXT PRIMARY KEY,user_id TEXT REFERENCES users(id),expires_at TEXT);`);
  db.exec(readFileSync('migrations/0008_account_security.sql','utf8'));
  db.exec(readFileSync('migrations/0009_user_roles.sql','utf8'));
+ db.exec(readFileSync('migrations/0010_admin_access.sql','utf8'));
  return {db,DB:{prepare(sql){let args=[];return {bind(...values){args=values;return this},async first(){return db.prepare(sql).get(...args)||null},async run(){return db.prepare(sql).run(...args)}}}}};
 }
 const req=(body,cookie='',path='/api/auth/login')=>new Request('https://test.example'+path,{method:'POST',headers:{'content-type':'application/json',cookie},body:JSON.stringify(body)});
