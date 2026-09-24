@@ -120,3 +120,19 @@ la sesión y el rol en D1. Una cuenta suspendida no puede iniciar sesión; no se
 permite quitar el último master activo ni retirar el propio acceso en el panel.
 La gestión de infraestructura, facturación y proveedores externos se realiza en
 sus respectivas cuentas de servicio.
+
+### Conversación en el estudio
+
+Al enviar, el prompt y su adjunto pasan de inmediato al historial visible y el
+compositor queda vacío, disponible para escribir el próximo borrador. Una
+respuesta tardía nunca borra ese borrador. Enter envía; Mayús+Enter añade una
+línea. El chat permite copiar y editar mensajes, reintentar fallos con los
+parámetros originales, pedir cambios sobre una imagen, crear otra versión con
+semilla aleatoria y exportar los textos de la conversación como JSON. Las
+imágenes también se pueden pegar o arrastrar al compositor. El historial está
+en memoria durante la visita; las imágenes elegidas se conservan en la biblioteca.
+
+La referencia inicial de The Seven Deadly Sins se cargó en R2/D1 con el prompt
+completo proporcionado por el master. La copia de inferencia es PNG de hasta
+512 píxeles; el archivo original del usuario no se modifica. Los ejemplos son
+contexto visual y textual, no entrenamiento ni una réplica del modelo ChatGPT.
