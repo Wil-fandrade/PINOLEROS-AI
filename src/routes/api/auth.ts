@@ -37,11 +37,11 @@ export async function login(request: Request, env: Env): Promise<Response> {
   const input = await credentials(request);
   if (!input) return Response.json({ error: "Correo o contraseña inválidos." }, { status: 400 });
   if (!await allowAuthAttempt(request, env, input.email)) return Response.json({ error: "Demasiados intentos. Inténtalo en una hora." }, { status: 429 });
-  const user = await env.DB.prepare("SELECT id, email, password_hash, password_salt FROM users WHERE email = ?1").bind(input.email)
-    .first<{ id: string; email: string; password_hash: string; password_salt: string }>();
+  const user = await env.DB.prepare("SELECT id, email, role, password_hash, password_salt FROM users WHERE email = ?1").bind(input.email)
+    .first<{ id: string; email: string; role: "user" | "master"; password_hash: string; password_salt: string }>();
   if (!user || !(await verifyPassword(input.password, user.password_salt, user.password_hash))) return Response.json({ error: "Correo o contraseña inválidos." }, { status: 401 });
   const token = await createSession(user.id, env);
-  return Response.json({ user: { id: user.id, email: user.email } }, { headers: { "set-cookie": sessionCookie(token) } });
+  return Response.json({ user: { id: user.id, email: user.email, role: user.role } }, { headers: { "set-cookie": sessionCookie(token) } });
 }
 
 export async function me(request: Request, env: Env): Promise<Response> {

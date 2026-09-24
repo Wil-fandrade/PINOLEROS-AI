@@ -10,6 +10,7 @@ function environment(){
  const db=new DatabaseSync(':memory:');
  db.exec(`PRAGMA foreign_keys=ON; CREATE TABLE users(id TEXT PRIMARY KEY,email TEXT UNIQUE COLLATE NOCASE,phone TEXT,name TEXT,nickname TEXT,password_hash TEXT,password_salt TEXT); CREATE TABLE sessions(token_hash TEXT PRIMARY KEY,user_id TEXT REFERENCES users(id),expires_at TEXT);`);
  db.exec(readFileSync('migrations/0008_account_security.sql','utf8'));
+ db.exec(readFileSync('migrations/0009_user_roles.sql','utf8'));
  return {db,DB:{prepare(sql){let args=[];return {bind(...values){args=values;return this},async first(){return db.prepare(sql).get(...args)||null},async run(){return db.prepare(sql).run(...args)}}}}};
 }
 const req=(body,cookie='',path='/api/auth/login')=>new Request('https://test.example'+path,{method:'POST',headers:{'content-type':'application/json',cookie},body:JSON.stringify(body)});
@@ -53,3 +54,11 @@ test('login attempts are limited and cross-origin account mutations rejected',as
 test('account page script parses and responses prevent caching',async()=>{
  const r=account();assert.equal(r.headers.get('cache-control'),'no-store');const html=await r.text();new Function(html.match(/<script>([\s\S]*?)<\/script>/)[1]);assert.match(html,/Confirmar nueva contraseña/);
 });
+
+ test('public registration cannot grant master role and sessions read the stored role',async()=>{
+ const env=environment();const r=await register(req({...profile,role:'master'}),env);assert.equal(r.status,201);
+ assert.equal(env.db.prepare('SELECT role FROM users').get().role,'user');
+ env.db.exec("UPDATE users SET role = 'master'");
+ const loginResponse=await login(req(profile),env);assert.equal((await loginResponse.json()).user.role,'master');
+ const cookie=loginResponse.headers.get('set-cookie').split(';')[0];assert.equal((await getUser(req({},cookie),env)).role,'master');
+ });

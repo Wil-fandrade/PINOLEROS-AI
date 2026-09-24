@@ -29,12 +29,12 @@ export function readSessionToken(request: Request): string | null {
   try { return match ? decodeURIComponent(match[1]) : null; } catch { return null; }
 }
 
-export async function getUser(request: Request, env: Env): Promise<{ id: string; email: string } | null> {
+export async function getUser(request: Request, env: Env): Promise<{ id: string; email: string; role: "user" | "master" } | null> {
   const token = readSessionToken(request);
   if (!token) return null;
   const tokenHash = await sha256(token);
-  return env.DB.prepare("SELECT users.id, users.email FROM sessions JOIN users ON users.id = sessions.user_id WHERE sessions.token_hash = ?1 AND sessions.expires_at > CURRENT_TIMESTAMP")
-    .bind(tokenHash).first<{ id: string; email: string }>();
+  return env.DB.prepare("SELECT users.id, users.email, users.role FROM sessions JOIN users ON users.id = sessions.user_id WHERE sessions.token_hash = ?1 AND sessions.expires_at > CURRENT_TIMESTAMP")
+    .bind(tokenHash).first<{ id: string; email: string; role: "user" | "master" }>();
 }
 
 export async function createSession(userId: string, env: Env): Promise<string> {
