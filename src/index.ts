@@ -3,7 +3,7 @@ import { studio } from "./routes/studio";
 import { health } from "./routes/health";
 import { createDesign, dashboardData } from "./routes/api/dashboard";
 import { login, logout, me, register } from "./routes/api/auth";
-import { createPrintOrder, deleteCreation, generate, media, myCreations, promptAssist, selectCreation } from "./routes/api/creations";
+import { createPrintOrder, deleteCreation, generate, generationStatus, media, myCreations, promptAssist, selectCreation } from "./routes/api/creations";
 
 /** Cloudflare Worker entry point. Keep request routing here and endpoint code in routes/. */
 export default {
@@ -36,6 +36,7 @@ export default {
     if (request.method === "POST" && pathname === "/api/auth/logout") return logout(request, env);
     if (request.method === "GET" && pathname === "/api/auth/me") return me(request, env);
     if (request.method === "POST" && pathname === "/api/prompt-assist") return promptAssist(request, env);
+    if (request.method === "GET" && pathname === "/api/generation/status") return generationStatus(request, env);
     if (request.method === "POST" && pathname === "/api/generate") return generate(request, env);
     if (request.method === "POST" && pathname === "/api/creations") return selectCreation(request, env);
     if (request.method === "GET" && pathname === "/api/creations") return myCreations(request, env);

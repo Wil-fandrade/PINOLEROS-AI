@@ -35,3 +35,10 @@ temp/
 *.pem
 *.key
 *.crt
+# Local image engine
+engine/.venv/
+engine/.token
+engine/models/
+engine/outputs/
+__pycache__/
+*.pyc

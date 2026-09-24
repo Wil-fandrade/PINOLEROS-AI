@@ -8,7 +8,10 @@
     "deploy": "wrangler deploy",
     "deploy:dry-run": "wrangler deploy --dry-run",
     "typecheck": "tsc --noEmit",
-    "check": "npm run typecheck && npm run deploy:dry-run"
+    "check": "npm run typecheck && npm run deploy:dry-run",
+    "test": "esbuild tests/studio.test.mjs --bundle --platform=node --format=esm --packages=external --outfile=tmp/studio.test.mjs && node --test tmp/studio.test.mjs",
+    "doctor": "node scripts/doctor.mjs",
+    "db:migrate:remote": "wrangler d1 migrations apply pinoleros-ai-db --remote"
   },
   "keywords": [
     "cloudflare-workers",
@@ -20,6 +23,7 @@
     "node": ">=22"
   },
   "devDependencies": {
+    "esbuild": "^0.28.2",
     "typescript": "^7.0.2",
     "wrangler": "^4.131.1"
   }
