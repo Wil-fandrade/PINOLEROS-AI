@@ -1,3 +1,4 @@
+import { references } from "./routes/api/references";
 import { admin } from "./routes/api/admin";
 import { account } from "./routes/account";
 import { home } from "./routes/home";
@@ -11,6 +12,7 @@ import { createPrintOrder, deleteCreation, generate, generationStatus, media, my
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const { pathname } = new URL(request.url);
+    if (pathname === "/api/references" || pathname.startsWith("/api/references/")) return references(request, env);
     if (pathname === "/admin" || pathname === "/api/admin" || pathname.startsWith("/api/admin/")) return admin(request, env);
     if (request.method === "POST" && pathname.startsWith("/api/auth/")) {
       const origin = request.headers.get("origin");

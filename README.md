@@ -3,26 +3,38 @@
 La aplicación funciona con **Cloudflare Workers AI, D1 y R2**. No necesita un servidor
 propio, Python, pesos descargados, una computadora encendida ni una clave de Gemini.
 
-## Funciones integradas
+## Estudio creativo
 
-- **FLUX.2 Klein 4B:** texto a imagen y edición con una referencia, mediante el binding
-  `AI` de Workers AI. Inferencia fija de cuatro pasos según el modelo.
-- **SDXL:** generador alternativo; referencia, fuerza de transformación, 12/20 pasos.
-- **Asistente Llama:** mejora y traduce descripciones a inglés, conserva personajes y estilo.
-- Formatos 16:9, 9:16, 1:1, 4:5 y 3:2; dos tamaños, semilla y estilos.
-- La referencia PNG/JPEG/WebP (máximo 10 MB de entrada) se convierte en el navegador
-  a PNG de hasta 512 píxeles conservando la proporción. El servidor valida ese límite.
-- Resultado mostrado al completar la petición, sin recargar; contador de tiempo real
-  transcurrido mientras se espera. No hay porcentaje ni previews intermedios ficticios:
-  estos modelos devuelven la imagen completa, no eventos de progreso de inferencia.
-- Descarga del original, edición mediante referencia, favoritos privados en R2/D1,
-  cuentas y solicitudes de impresión.
-- Hasta 10 intentos de imágenes y 20 mejoras de descripción por cuenta/día UTC,
-  contabilizados atómicamente en D1. Los intentos fallidos también cuentan; no se
-  reintenta inferencia automáticamente ni se cambia de modelo sin que lo elija el usuario.
+`/crear` es una interfaz de conversación sin paneles laterales. Conserva el
+estudio y la biblioteca privada. El compositor central incluye una imagen
+adjunta opcional y parámetros desplegables: formato, resolución, estilo,
+colores, modelo, semilla y selección de referencias. Los resultados se pueden
+descargar, guardar o usar para pedir cambios. Las conversaciones permanecen
+solo en memoria durante la visita (hasta 12 imágenes); guarda las imágenes que
+quieras conservar en la biblioteca antes de recargar.
 
-La mayor dimensión solicitada es 1536 píxeles. No se promete detalle 4K ni resultados
-idénticos a Gemini. Una resolución mayor consume más recursos.
+- FLUX.2 Klein 4B y SDXL generan y editan imágenes mediante Workers AI.
+- La dirección creativa usa Llama para enriquecer el prompt respetando sus
+  restricciones; puede desactivarse. Si falla, se utiliza el prompt original
+  con una indicación en el resultado.
+- Formatos 16:9, 9:16, 1:1, 4:5 y 3:2; hasta 1536 píxeles en el lado mayor.
+- Referencias PNG/JPEG/WebP de hasta 10 MB se preparan como PNG de hasta 512
+  píxeles. El servidor valida el formato y las dimensiones.
+- La cuenta master abre **Referencias del master** desde el avatar. Puede
+  subir hasta 100 ejemplos con imagen, prompt y palabras clave, activarlos,
+  desactivarlos o eliminarlos. Se almacenan en R2/D1.
+- La selección automática compara palabras del prompt con título, etiquetas
+  y descripción de los ejemplos activos. Sin coincidencias no añade ejemplo.
+  También se puede seleccionar uno manualmente o desactivar los ejemplos.
+  La imagen y el prompt del ejemplo orientan la generación; una imagen
+  adjunta del usuario tiene prioridad visual. El resultado identifica el
+  ejemplo utilizado. Esto no entrena modelos ni implica aprendizaje autónomo.
+- Hasta 10 intentos de imagen y 20 de dirección/mejora del prompt por cuenta
+  y día UTC, contabilizados en D1. Los intentos fallidos también cuentan.
+  No hay reintentos automáticos ni progreso de inferencia simulado.
+- La biblioteca y sus imágenes permanecen privadas; solo se guardan los
+  resultados elegidos por el usuario. Las funciones de administración y
+  pedidos existentes siguen disponibles en el panel master.
 
 ## Publicar
 
@@ -38,7 +50,7 @@ npm run db:migrate:remote
 npm run deploy
 ```
 
-La migración `0007_add_ai_usage.sql` es necesaria antes de usar los generadores.
+Aplica todas las migraciones pendientes, incluida `0011_creative_references.sql`, antes de publicar el nuevo estudio.
 `wrangler.jsonc` conecta los recursos existentes y declara `ai.binding = "AI"`.
 El binding autentica las peticiones a Workers AI dentro de Cloudflare; el navegador
 no recibe tokens. Si Cloudflare solicita aceptar condiciones de un modelo, se gestionan

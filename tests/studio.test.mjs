@@ -68,7 +68,7 @@ test('reference bounds and native aspect ratios are validated',()=>{
 test('browser script parses and no local engine dependency remains',()=>{
   const page=studioPage();for(const match of page.matchAll(/<script>([\s\S]*?)<\/script>/g))assert.doesNotThrow(()=>new Function(match[1]));
   assert.doesNotMatch(page,/localhost|127\.0\.0\.1|engine:start|PINOLEROS Local|\/api\/generation\/jobs/);
-  assert.match(page,/id="model"/);assert.match(page,/Cloudflare/);assert.match(page,/clearInterval\(timer\)/);
+  assert.match(page,/id="model"/);assert.doesNotMatch(page,/<aside|class="sidebar"|class="settings panel"/);assert.match(page,/Tu biblioteca privada/);assert.match(page,/clearInterval\(timer\)/);
 });
 
 
